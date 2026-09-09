@@ -1,0 +1,47 @@
+import csv
+from analyzer import (
+    load_manifest, collect_js_source, analyze_permissions,
+    categorize_permissions, check_sensitive_sites, build_features, FEATURE_NAMES
+)
+
+EXTENSIONS_TO_ANALYZE = [
+    "sample_extension_high_risk",
+    # add more paths here, real ones later, e.g.:
+    # r"C:\Users\Kavindu\AppData\Local\Google\Chrome\User Data\Default\Extensions\<ID>\<version>",
+]
+
+
+def analyze_one(ext_path):
+    manifest = load_manifest(ext_path)
+    code = collect_js_source(ext_path)
+    declared, used, unused, high_risk_found = analyze_permissions(manifest, code)
+    category_counts, category_matches = categorize_permissions(declared)
+    host_perms = manifest.get("host_permissions", [])
+    site_results = check_sensitive_sites(host_perms)
+    features = build_features(declared, unused, high_risk_found, category_counts, site_results)
+
+    name = manifest.get("name", "Unknown")
+    print(f"{name}  |  unused={unused}  |  high_risk={high_risk_found}")
+    return name, features
+
+
+def main():
+    rows = []
+    for ext_path in EXTENSIONS_TO_ANALYZE:
+        try:
+            name, features = analyze_one(ext_path)
+            rows.append([name, ext_path] + features + ["LOW"])  # default label, edit after
+        except Exception as e:
+            print(f"!! Skipped {ext_path}: {e}")
+
+    with open("dataset.csv", "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(["name", "folder_path"] + FEATURE_NAMES + ["label"])
+        writer.writerows(rows)
+
+    print(f"\nWrote {len(rows)} rows to dataset.csv")
+    print("Now open dataset.csv and fix the 'label' column for each row!")
+
+
+if __name__ == "__main__":
+    main()

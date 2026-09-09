@@ -1,0 +1,37 @@
+body { font-family: Arial, sans-serif; background: #f4f6f8; padding: 40px; }
+.container { max-width: 600px; margin: 0 auto; }
+.upload-box { display: block; border: 2px dashed #999; padding: 30px; text-align: center; cursor: pointer; background: white; border-radius: 10px; }
+.upload-box input { display: none; }
+button { width: 100%; padding: 12px; margin-top: 10px; background: #0f6e6e; color: white; border: none; border-radius: 8px; font-size: 15px; cursor: pointer; }
+.card { background: white; padding: 20px; border-radius: 10px; margin-top: 20px; }
+.badge { padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 12px; }
+.badge-low { background: #d4f7dc; color: green; }
+.badge-medium { background: #fff3cd; color: #856404; }
+.badge-high { background: #f8d7da; color: #b3261e; }
+.error { background: #f8d7da; padding: 10px; border-radius: 8px; color: #b3261e; }
+.header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.version { color: #94a3b8; font-size: 13px; margin: 2px 0 0; }
+.section-title { font-size: 14px; font-weight: 700; color: #1f2933; margin: 24px 0 10px; text-transform: uppercase; letter-spacing: 0.03em; }
+
+.bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.bar-label { width: 170px; font-size: 13px; color: #334155; flex-shrink: 0; }
+.bar-track { flex: 1; background: #eef2f6; border-radius: 8px; height: 16px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 8px; transition: width 0.3s ease; }
+.bar-pct { width: 40px; text-align: right; font-size: 13px; font-weight: 600; color: #334155; }
+
+.bar-low { background: #1a7f4e; }
+.bar-medium { background: #a8630f; }
+.bar-high { background: #b3261e; }
+.bar-used { background: #0f6e6e; }
+.bar-unused { background: #b3261e; }
+.bar-category { background: #1f3864; }
+.bar-site { background: #8b2fc9; }
+
+.perm-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.tag { padding: 4px 10px; border-radius: 8px; font-size: 12px; }
+.tag-used { background: #e5f6ec; color: #1a7f4e; }
+.tag-unused { background: #fdecea; color: #b3261e; cursor: help; }
+.section-heading { font-size: 17px; font-weight: 700; margin: 0 0 4px; display: flex; align-items: center; gap: 6px; }
+.section-subtitle { font-size: 12px; color: #94a3b8; margin: 0 0 16px; }
+.section-static { border-left: 4px solid #0f6e6e; }
+.section-ai { border-left: 4px solid #1f3864; }

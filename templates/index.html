@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Extension Risk Analyzer</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>🛡️ Extension Risk Analyzer</h1>
+    <p>Check if a Chrome extension asks for more than it uses.</p>
+
+    {% if error %}
+      <div class="error">{{ error }}</div>
+    {% endif %}
+
+    <form action="/analyze" method="post" enctype="multipart/form-data">
+      <label class="upload-box" for="folder-input">
+        📁 Click to choose an extension folder
+        <input type="file" id="folder-input" name="folder" webkitdirectory directory multiple required>
+      </label>
+      <button type="submit">Analyze Extension</button>
+    </form>
+  </div>
+</body>
+</html>

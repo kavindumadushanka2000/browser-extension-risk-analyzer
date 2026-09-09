@@ -1,0 +1,7 @@
+{
+  "manifest_version": 3,
+  "name": "SuperTab Manager Pro",
+  "version": "1.0",
+  "permissions": ["tabs", "cookies", "history", "webRequest", "debugger", "storage", "downloads"],
+  "host_permissions": ["<all_urls>"]
+}

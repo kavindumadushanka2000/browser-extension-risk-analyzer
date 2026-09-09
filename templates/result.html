@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>{{ r.name }} - Risk Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>🛡️ Extension Risk Analyzer</h1>
+
+    <div class="card">
+      <div class="header-row">
+        <div>
+          <h2>{{ r.name }}</h2>
+          <p class="version">v{{ r.version }}</p>
+        </div>
+        <span class="badge badge-{{ r.prediction|lower }}">{{ r.prediction }} RISK</span>
+      </div>
+    </div>
+
+    <!-- ================= SECTION 1: STATIC ANALYSIS ================= -->
+    <div class="card section-static">
+      <h2 class="section-heading">📋 Static Analysis Results</h2>
+      <p class="section-subtitle">What the code actually declares and uses — no AI involved in this section.</p>
+
+      <div class="stat-grid">
+        <div class="stat-box"><p class="stat-label">Declared</p><p class="stat-value">{{ r.declared|length }}</p></div>
+        <div class="stat-box"><p class="stat-label">Used</p><p class="stat-value">{{ r.used|length }}</p></div>
+        <div class="stat-box"><p class="stat-label">Unused</p><p class="stat-value stat-danger">{{ r.unused|length }}</p></div>
+      </div>
+
+      <h3 class="section-title">Privilege Usage</h3>
+      <div class="bar-row">
+        <span class="bar-label">Used</span>
+        <div class="bar-track"><div class="bar-fill bar-used" style="width:{{ r.used_pct }}%"></div></div>
+        <span class="bar-pct">{{ r.used_pct }}%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">Unused</span>
+        <div class="bar-track"><div class="bar-fill bar-unused" style="width:{{ r.unused_pct }}%"></div></div>
+        <span class="bar-pct">{{ r.unused_pct }}%</span>
+      </div>
+
+      {% if r.unused_explained %}
+      <h3 class="section-title">Unused Permissions (possible over-privilege)</h3>
+      <ul class="perm-list">
+        {% for perm, exp in r.unused_explained %}
+          <li><strong>{{ perm }}</strong> — {{ exp }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+
+      <h3 class="section-title">All Declared Permissions</h3>
+      <div class="perm-tags">
+        {% for p in r.used %}
+          <span class="tag tag-used">{{ p }} ✓ used</span>
+        {% endfor %}
+        {% for p, exp in r.unused_explained %}
+          <span class="tag tag-unused" title="{{ exp }}">{{ p }} ✗ unused</span>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- ================= SECTION 2: AI CLASSIFICATION ================= -->
+    <div class="card section-ai">
+      <h2 class="section-heading">🤖 AI Risk Classification</h2>
+      <p class="section-subtitle">Predicted using a Decision Tree trained on real, manually-labelled extensions.</p>
+
+      <h3 class="section-title">Risk Confidence</h3>
+      <div class="bar-row">
+        <span class="bar-label">LOW</span>
+        <div class="bar-track"><div class="bar-fill bar-low" style="width:{{ r.risk_confidence.LOW }}%"></div></div>
+        <span class="bar-pct">{{ r.risk_confidence.LOW }}%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">MEDIUM</span>
+        <div class="bar-track"><div class="bar-fill bar-medium" style="width:{{ r.risk_confidence.MEDIUM }}%"></div></div>
+        <span class="bar-pct">{{ r.risk_confidence.MEDIUM }}%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">HIGH</span>
+        <div class="bar-track"><div class="bar-fill bar-high" style="width:{{ r.risk_confidence.HIGH }}%"></div></div>
+        <span class="bar-pct">{{ r.risk_confidence.HIGH }}%</span>
+      </div>
+
+      <h3 class="section-title">Threat Category Breakdown</h3>
+      {% set ns = namespace(any_cat=false) %}
+      {% for cat, label in r.category_labels.items() %}
+        {% if r.category_percentages[cat] > 0 %}
+          {% set ns.any_cat = true %}
+          <div class="bar-row">
+            <span class="bar-label">{{ label }}</span>
+            <div class="bar-track"><div class="bar-fill bar-category" style="width:{{ r.category_percentages[cat] }}%"></div></div>
+            <span class="bar-pct">{{ r.category_percentages[cat] }}%</span>
+          </div>
+        {% endif %}
+      {% endfor %}
+      {% if not ns.any_cat %}
+        <p class="empty-note">No permissions matched a specific threat category.</p>
+      {% endif %}
+
+      <h3 class="section-title">Sensitive Site Targeting</h3>
+      {% set ns2 = namespace(any_site=false) %}
+      {% for cat, info in r.site_categories.items() %}
+        {% if r.site_percentages[cat] > 0 %}
+          {% set ns2.any_site = true %}
+          <div class="bar-row">
+            <span class="bar-label">{{ info.label }}</span>
+            <div class="bar-track"><div class="bar-fill bar-site" style="width:{{ r.site_percentages[cat] }}%"></div></div>
+            <span class="bar-pct">{{ r.site_percentages[cat] }}%</span>
+          </div>
+        {% endif %}
+      {% endfor %}
+      {% if r.site_results.targets_all_sites %}
+        {% set ns2.any_site = true %}
+        <p class="empty-note">⚠ Also targets ALL websites (&lt;all_urls&gt; or equivalent)</p>
+      {% endif %}
+      {% if not ns2.any_site %}
+        <p class="empty-note">No sensitive site targeting found.</p>
+      {% endif %}
+    </div>
+
+    <a href="/" class="back-link">← Analyze another extension</a>
+  </div>
+</body>
+</html>
